@@ -1,0 +1,3 @@
+- name: Join worker node
+  command: "{{ worker_join_command }}"
+

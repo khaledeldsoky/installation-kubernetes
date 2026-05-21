@@ -1,0 +1,18 @@
+- name: Join additional control plane node
+  command: "{{ control_plane_join_command }}"
+
+- name: Make dir for kubeadm config
+  ansible.builtin.file:
+    state: directory
+    path: "/root/.kube"
+    mode: "0755"
+
+
+- name: Copy config from etc to user dir
+  ansible.builtin.copy:
+    src: /etc/kubernetes/admin.conf
+    dest: "/root/.kube/config"
+    mode: '0644'
+    remote_src: true
+    owner: "root"
+    group: "root"
