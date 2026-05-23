@@ -1,0 +1,26 @@
+tcptraceroute 
+nc
+arp
+tcpdump
+
+systemctl status firewalld
+iptables -nvL cali-INPUT 2>/dev/null | head -30
+iptables -nvL cali-FORWARD 2>/dev/null | head -30
+tcptraceroute 10.244.226.66 4466
+
+
+# Disable rp_filter on the VXLAN interface specifically
+sysctl -w net.ipv4.conf.vxlan/calico.rp_filter=0
+
+# Also fix physical interface (helps with other potential issues)
+sysctl -w net.ipv4.conf.ens192.rp_filter=0
+
+# Calico's virtual interfaces (cali*)
+sysctl -w net.ipv4.conf.default.rp_filter=0
+
+# Apply to all existing cali interfaces
+for iface in $(ip link show | grep -o 'cali[a-f0-9]*'); do
+    sysctl -w net.ipv4.conf.$iface.rp_filter=0
+done
+
+

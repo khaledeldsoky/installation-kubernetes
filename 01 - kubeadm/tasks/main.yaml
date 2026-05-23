@@ -69,10 +69,26 @@
       - kubelet 
       - kubeadm 
       - kubectl 
-      - containerd.io
-      - containernetworking-plugins
     state: present
     disable_excludes: Kubernetes
+
+- name: Use iptables-legacy backend if available
+  ansible.builtin.shell: |
+    alternatives --set iptables /usr/sbin/iptables-legacy || true
+    alternatives --set ip6tables /usr/sbin/ip6tables-legacy || true
+    alternatives --set arptables /usr/sbin/arptables-legacy || true
+    alternatives --set ebtables /usr/sbin/ebtables-legacy || true
+  changed_when: false
+
+- name: Install Packages
+  ansible.builtin.dnf:
+    name: 
+      - containerd.io
+      - containernetworking-plugins
+      - tcptraceroute 
+      - nc
+      - tcpdump
+    state: present
 
 - name: Copy all CNI binaries to /opt/cni/bin
   shell: cp /usr/libexec/cni/* /opt/cni/bin/
@@ -125,6 +141,21 @@
     state: present
     reload: true
 
+- name: Enable bridge traffic through iptables
+  ansible.posix.sysctl:
+    name: net.bridge.bridge-nf-call-iptables
+    value: '1'
+    sysctl_file: /etc/sysctl.d/99-k8s.conf
+    state: present
+    reload: true
+
+- name: Enable bridge IPv6 traffic through iptables
+  ansible.posix.sysctl:
+    name: net.bridge.bridge-nf-call-ip6tables
+    value: '1'
+    sysctl_file: /etc/sysctl.d/99-k8s.conf
+    state: present
+    reload: true
 
 - name: Generate default containerd config
   ansible.builtin.command:  containerd config default
@@ -183,43 +214,48 @@
     name: kubernetes
     state: present
 
-
-
-- name: Ensure firewalld is installed
-  ansible.builtin.dnf:
-    name: firewalld
-    state: present
-
-- name: Enable and start firewalld
+- name: Disable firewalld
   ansible.builtin.systemd:
     name: firewalld
-    enabled: true
-    state: started
+    enabled: false
+    state: stopped
+
+
+# - name: Ensure firewalld is installed
+#   ansible.builtin.dnf:
+#     name: firewalld
+#     state: present
+
+# - name: Enable and start firewalld
+#   ansible.builtin.systemd:
+#     name: firewalld
+#     enabled: true
+#     state: started
   
 
-- name: Open Kubernetes control-plane ports
-  ansible.posix.firewalld:
-    port: "{{ item }}"
-    permanent: true
-    state: enabled
-    immediate: true
-  loop:
-    - 6443/tcp
-    - 2379-2380/tcp
-    - 10250/tcp
-    - 10257/tcp
-    - 10259/tcp
-    - 4789/udp
-    - 10250/tcp
-    - 30000-32767/tcp
-    - 4789/udp
-    - 179/tcp
-    - 8472/udp
-    - 80/tcp
-    - 443/tcp
-    - 8081/tcp
+# - name: Open Kubernetes control-plane ports
+#   ansible.posix.firewalld:
+#     port: "{{ item }}"
+#     permanent: true
+#     state: enabled
+#     immediate: true
+#   loop:
+#     - 6443/tcp
+#     - 2379-2380/tcp
+#     - 10250/tcp
+#     - 10257/tcp
+#     - 10259/tcp
+#     - 4789/udp
+#     - 10250/tcp
+#     - 30000-32767/tcp
+#     - 4789/udp
+#     - 179/tcp
+#     - 8472/udp
+#     - 80/tcp
+#     - 443/tcp
+#     - 8081/tcp
 
-- name: Reload firewalld
-  ansible.builtin.service:
-    name: firewalld
-    state: reloaded
+# - name: Reload firewalld
+#   ansible.builtin.service:
+#     name: firewalld
+#     state: reloaded
