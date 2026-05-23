@@ -1,0 +1,95 @@
+- name: Upgrade system safely
+  ansible.builtin.dnf:
+    name: "*"
+    state: latest
+    update_only: yes
+
+- name: Disable swap immediately
+  ansible.builtin.command: swapoff -a
+  changed_when: false
+
+- name: Disable swap permanently in /etc/fstab
+  ansible.builtin.replace:
+    path: /etc/fstab
+    regexp: '^([^#].*\s+swap\s+.*)$'
+    replace: '# \1'
+
+
+- name: Ensure required kernel modules config file
+  copy:
+    dest: /etc/modules-load.d/k8s.conf
+    content: |
+      overlay
+      br_netfilter
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Load overlay module
+  community.general.modprobe:
+    name: overlay
+    state: present
+
+- name: Load br_netfilter module
+  community.general.modprobe:
+    name: br_netfilter
+    state: present
+
+- name: Add Docker CE repository
+  ansible.builtin.get_url:
+    url: https://download.docker.com/linux/centos/docker-ce.repo
+    dest: /etc/yum.repos.d/docker-ce.repo
+    mode: '0644'
+
+- name: Set SELinux to permissive
+  ansible.posix.selinux:
+    policy: targeted
+    state: permissive
+
+- name: Disable firewalld
+  ansible.builtin.systemd:
+    name: firewalld
+    enabled: false
+    state: stopped
+
+
+
+
+# - name: Ensure firewalld is installed
+#   ansible.builtin.dnf:
+#     name: firewalld
+#     state: present
+
+# - name: Enable and start firewalld
+#   ansible.builtin.systemd:
+#     name: firewalld
+#     enabled: true
+#     state: started
+  
+
+# - name: Open Kubernetes control-plane ports
+#   ansible.posix.firewalld:
+#     port: "{{ item }}"
+#     permanent: true
+#     state: enabled
+#     immediate: true
+#   loop:
+#     - 6443/tcp
+#     - 2379-2380/tcp
+#     - 10250/tcp
+#     - 10257/tcp
+#     - 10259/tcp
+#     - 4789/udp
+#     - 10250/tcp
+#     - 30000-32767/tcp
+#     - 4789/udp
+#     - 179/tcp
+#     - 8472/udp
+#     - 80/tcp
+#     - 443/tcp
+#     - 8081/tcp
+
+# - name: Reload firewalld
+#   ansible.builtin.service:
+#     name: firewalld
+#     state: reloaded
