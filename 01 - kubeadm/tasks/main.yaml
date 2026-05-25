@@ -20,15 +20,7 @@
     state: present
     disable_excludes: Kubernetes
 
-- name: Install Packages
-  ansible.builtin.dnf:
-    name: 
-      - containerd.io
-      - containernetworking-plugins
-      - tcptraceroute 
-      - nc
-      - tcpdump
-    state: present
+
 
 - name: Copy all CNI binaries to /opt/cni/bin
   shell: cp /usr/libexec/cni/* /opt/cni/bin/

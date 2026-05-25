@@ -52,7 +52,33 @@
     enabled: false
     state: stopped
 
-
+- name: Install Packages
+  ansible.builtin.dnf:
+    name: 
+      - containerd.io
+      - containernetworking-plugins
+      - tcptraceroute 
+      - nc
+      - tcpdump
+      - vim-enhanced
+      - wget
+      - unzip
+      - git 
+      - bind-utils 
+      - mtr 
+      - tcpdump 
+      - nmap-ncat 
+      - htop 
+      - sysstat 
+      - iotop 
+      - open-vm-tools 
+      - smartmontools 
+      - pciutils 
+      - usbutils
+      - net-tools
+      - ipvsadm
+      - helm
+    state: present
 
 
 # - name: Ensure firewalld is installed

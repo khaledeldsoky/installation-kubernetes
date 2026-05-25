@@ -1,7 +1,5 @@
 [bootstraped]
-control-plane-1 ansible_ssh_pass=123456  ansible_user=root
-
-
+control-plane-1 ansible_ssh_pass=123456
 
 [masters]
 control-plane-3 ansible_ssh_pass=123456
@@ -10,3 +8,4 @@ control-plane-2 ansible_ssh_pass=123456
 [workers]
 worker-1 ansible_ssh_pass=123456
 worker-2 ansible_ssh_pass=123456
+worker-3 ansible_ssh_pass=123456

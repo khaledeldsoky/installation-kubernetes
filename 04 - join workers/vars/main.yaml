@@ -1,4 +1,4 @@
 # group_vars/workers.yml
 
 worker_join_command: >
-    kubeadm join 172.16.6.85:6443 --token qhe7mn.dxefdk6hi6bl49tw --discovery-token-ca-cert-hash sha256:1cc9f36bac7479c713bffde86374e139af8dbf0c10ba3ead4f443074073ba5a1
+    kubeadm join 172.16.6.85:6443 --token oms1cx.8y4dzukqz10pcv7g --discovery-token-ca-cert-hash sha256:c4793edbd5ef052ad828083d17f688137374077cc120a39aa1905749916f9ee1 

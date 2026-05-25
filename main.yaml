@@ -1,7 +1,9 @@
 # - name: Install kubeadm in all 
 #   hosts: bootstraped , masters , workers
 #   roles:
+#     - "00 - for all vms"
 #     - "01 - kubeadm"
+
 
 - name: Join masters
   hosts: masters 
