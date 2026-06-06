@@ -1,2 +1,4 @@
 control_plane_join_command: >
-    kubeadm join 172.16.6.85:6443 --token oms1cx.8y4dzukqz10pcv7g --discovery-token-ca-cert-hash sha256:c4793edbd5ef052ad828083d17f688137374077cc120a39aa1905749916f9ee1 --control-plane --certificate-key 5423b9b7ead54949fab025228d021c33ac9bcc2c95fcb7911c96c0d6d45025cf
+  kubeadm join 172.16.6.85:6443 --token 0sl2dy.32z3koiy1z7imdum 
+        --discovery-token-ca-cert-hash sha256:f9ec2041fad10e925e700ebc01cc8a37e63186cfb486d5e50c4ded63133f1324 
+        --control-plane --certificate-key b1a08a2b3f02270a3aa13ce369b5dbecdc6c5f20804a4766a49033cfea0ea499

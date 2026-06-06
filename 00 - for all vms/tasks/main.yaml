@@ -55,6 +55,7 @@
 - name: Install Packages
   ansible.builtin.dnf:
     name: 
+      - epel-release
       - containerd.io
       - containernetworking-plugins
       - tcptraceroute 
@@ -68,7 +69,6 @@
       - mtr 
       - tcpdump 
       - nmap-ncat 
-      - htop 
       - sysstat 
       - iotop 
       - open-vm-tools 
@@ -77,9 +77,12 @@
       - usbutils
       - net-tools
       - ipvsadm
-      - helm
     state: present
 
+- name: Stop service cron on debian, if running
+  ansible.builtin.systemd:
+    name: firewalld
+    state: stopped
 
 # - name: Ensure firewalld is installed
 #   ansible.builtin.dnf:

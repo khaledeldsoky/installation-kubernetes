@@ -114,7 +114,7 @@
   ansible.builtin.shell: 'source /root/.bashrc'
   args:
     executable: /bin/bash
-  changed_when: false
+
 
 # ----------------------- reload Daemon
 - name: Reload Daemon
